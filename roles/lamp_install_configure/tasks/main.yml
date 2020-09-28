@@ -1,0 +1,71 @@
+---
+- hostname:
+    name: linux-server01
+
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+
+- name: Install required software for LAMP stack
+  yum: 
+    name: "{{ lamp_install_packages }}"
+
+- name: Install PyMySQL python package to manage MySQL with Ansible
+  pip:
+    name: PyMySQL
+
+- name: Start LAMP required services
+  systemd:
+    state: started
+    name: "{{ item }}"
+  loop: "{{ lamp_systemd_services }}"
+
+- name: Add Emarsys DB to MySQL
+  mysql_db:
+    name: emarsys
+    state: present
+
+- name:  Create DB user with required access to app DB
+  mysql_user:
+    name: emarsysdbuser
+    password: "{{ db_user_passwd }}"
+    priv: "emarsys.*:ALL"
+    state: present
+
+- name: Create document root directory
+  file:
+    path: /var/www/alma.com
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Change document root in Apache config
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^DocumentRoot' 
+    line: 'DocumentRoot "/var/www/alma.com"'
+    backrefs: yes
+
+- name: Copy website file to remote server
+  template:
+    src: index.php.j2
+    dest: /var/www/alma.com/index.php
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '644'
+
+- name: Restart LAMP required services to ensure consistency
+  systemd:
+    state: restarted
+    name: "{{ item }}"
+  loop: "{{ lamp_systemd_services }}"
+
+- name: Check that a page returns a status 200 and fail if the word 'successfully' is not in the page contents
+  uri:
+    url: http://localhost
+    return_content: yes
+  register: healthcheck
+  failed_when: "'sucessfully' not in healthcheck.content"
+...

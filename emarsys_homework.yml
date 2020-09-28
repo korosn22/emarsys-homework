@@ -1,0 +1,48 @@
+---
+- name: Create an instance
+  hosts: localhost
+  gather_facts: no
+  vars:
+      gcp_project: emarsys-homework
+      gcp_cred_kind: serviceaccount
+      gcp_cred_file: ./{{ gcp_project }}-access.json
+      zone: "europe-west3-a"
+      region: "europe-west3"
+
+  tasks:
+
+   - name: Get Public IP of control machine
+     ipify_facts:
+     register: public_ip
+    
+   - name: Create keypair to use with new VM
+     openssh_keypair:
+       path: "~/.ssh/{{ gcp_project }}"
+       type: rsa
+       size: 4096
+       state: present
+       force: no
+
+   - name: Create and configure GCP resources
+     include_role:
+       name: gcp_role
+
+   - name: Make alma.com correctly resolveable locally
+     lineinfile:
+       dest: /etc/hosts
+       line: "{{ address.address }} alma.com"
+       state: present
+     become: yes
+
+- name: Install and configure LAMP required tasks
+  hosts: emarsys_homework_vm
+  connection: ssh
+  become: True
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/emarsys-homework
+    ansible_user: "{{ lookup('env','GCP_USERNAME') }}"
+    db_user_passwd: "{{ lookup('env','DB_USER_PASSWD') }}"
+
+  roles:
+    - lamp_install_configure
+...

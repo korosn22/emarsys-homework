@@ -1,0 +1,10 @@
+---
+lamp_install_packages:
+    - httpd
+    - mariadb-server
+    - php
+    - php-mysqlnd
+lamp_systemd_services:
+    - httpd
+    - mariadb
+...

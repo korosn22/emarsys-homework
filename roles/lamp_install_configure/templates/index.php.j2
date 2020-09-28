@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alma.com</title>
+</head>
+<body>
+    <?php
+    try {
+        $link = new PDO("mysql:host=localhost;dbname=emarsys", 'emarsysdbuser', '{{ db_user_passwd }}');
+        echo 'Alma.com served sucessfully';
+    }  catch (PDOException $e) {
+        print "Could not connect: ".$e->getMessage();
+        die();
+    }
+    ?>
+</body>
+</html>
