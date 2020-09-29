@@ -68,7 +68,7 @@
             nat_ip: "{{ address }}"
             type: 'ONE_TO_ONE_NAT'
     metadata:
-      ssh-keys: "korosn22:{{ lookup('file', '~/.ssh/emarsys-homework.pub') }} korosn22"
+      ssh-keys: "{{ gcp_user_name}}:{{ lookup('file', '~/.ssh/emarsys-homework.pub') }} {{ gcp_user_name}}"
     zone: "{{ zone }}"
     project: "{{ gcp_project }}"
     auth_kind: "{{ gcp_cred_kind }}"

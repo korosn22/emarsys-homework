@@ -4,6 +4,7 @@
   gather_facts: no
   vars:
       gcp_project: emarsys-homework
+      gcp_user_name: "{{ lookup('env','GCP_USERNAME') }}"
       gcp_cred_kind: serviceaccount
       gcp_cred_file: ./{{ gcp_project }}-access.json
       zone: "europe-west3-a"
@@ -40,7 +41,7 @@
   become: True
   vars:
     ansible_ssh_private_key_file: ~/.ssh/emarsys-homework
-    ansible_user: "{{ lookup('env','GCP_USERNAME') }}"
+    ansible_user: "{{ {{ gcp_user_name}} }}"
     db_user_passwd: "{{ lookup('env','DB_USER_PASSWD') }}"
 
   roles:

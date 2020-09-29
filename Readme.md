@@ -10,6 +10,7 @@ This solution was built on top of Ansible configuration management tool, which c
     - GCP service account JSON access file with sufficent privileges to administer GCP Compute Cloud resources at least in the project scope through API placed in reporitory root directory and named "emarsys-homework-acess.json"
     - Providing environmental variables:
       > export GCP_USERNAME=
+      
       > export DB_USER_PASSWD=
     - The user who runs the ansible script has to have sudo access to the control machine in order for the local alma.com hosts file resolution to work (preferably nopasswd sudo access) 
     - Ubuntu 20.04 as a control machine is recommended (solution developed and tested in WSL Ubuntu 20.04)
